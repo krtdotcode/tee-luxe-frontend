@@ -20,46 +20,48 @@ function TeeLuxeNavbar() {
   };
 
   return (
-    <Navbar bg="white" expand="lg" className="border-bottom shadow-sm">
-      <Container>
+    <Navbar bg="white" expand="lg" className="py-3">
+      <Container fluid className="px-3">
         {/* Brand Logo */}
-        <Navbar.Brand as={Link} to="/" className="fw-bold fs-4 text-dark">
+        <Navbar.Brand as={Link} to="/" className="fw-bolder fs-3 text-dark me-4">
           TeeLuxe
         </Navbar.Brand>
 
         {/* Mobile Toggle */}
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle aria-controls="basic-navbar-nav" className="ms-2" />
 
         {/* Collapsible Content */}
-        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-between">
-          {/* Centered Nav Links */}
-          <Nav className="mx-auto">
-            <NavLink to="/">New & Featured</NavLink>
-            <NavLink to="/men">Men</NavLink>
-            <NavLink to="/women">Women</NavLink>
-            <NavLink to="/sale">Sale</NavLink>
-          </Nav>
+        <Navbar.Collapse id="basic-navbar-nav">
+          <div className="d-flex w-100 align-items-center justify-content-between">
+            {/* Centered Nav Links */}
+            <Nav className="mx-auto d-flex gap-2">
+              <NavLink to="/">New & Featured</NavLink>
+              <NavLink to="/men">Men</NavLink>
+              <NavLink to="/women">Women</NavLink>
+              <NavLink to="/sale">Sale</NavLink>
+            </Nav>
 
-          {/* Search Bar on Right */}
-          <Form className="d-flex">
-            <InputGroup style={{ width: '250px' }}>
-              <Form.Control
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="rounded-start"
-              />
-              <Button
-                variant="outline-secondary"
-                onClick={handleClearSearch}
-                disabled={!searchQuery}
-                className="rounded-end"
-              >
-                ×
-              </Button>
-            </InputGroup>
-          </Form>
+            {/* Search Bar on Right */}
+            <Form className="ms-auto">
+              <InputGroup className="search-group">
+                <Form.Control
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="search-input"
+                />
+                <Button
+                  variant="outline-dark"
+                  onClick={handleClearSearch}
+                  disabled={!searchQuery}
+                  className="search-clear-btn"
+                >
+                  ×
+                </Button>
+              </InputGroup>
+            </Form>
+          </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>
