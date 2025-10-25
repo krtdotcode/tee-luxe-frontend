@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import './App.css';
 import TeeLuxeNavbar from './components/Navbar';
+import Footer from './components/Footer';
 
 function NewFeatured() {
   return (
@@ -19,17 +20,17 @@ function NewFeatured() {
                 Experience the perfect blend of simplicity and elegance. TeeLuxe offers contemporary clothing that resonates with your sophisticated sensibilities.
               </p>
               <div className="d-flex justify-content-center gap-3 flex-wrap">
-                <Button 
-                  variant="dark" 
-                  size="lg" 
+                <Button
+                  variant="dark"
+                  size="lg"
                   className="px-5 py-3 fw-bold"
                   style={{ fontFamily: 'Inter', borderRadius: '0' }}
                 >
                   Signup
                 </Button>
-                <Button 
-                  variant="outline-dark" 
-                  size="lg" 
+                <Button
+                  variant="outline-dark"
+                  size="lg"
                   className="px-5 py-3 fw-bold"
                   style={{ fontFamily: 'Inter', borderRadius: '0' }}
                 >
@@ -127,7 +128,7 @@ function App() {
     <Router>
       <div className="App">
         <TeeLuxeNavbar />
-        
+
         <main className="main-content">
           <Routes>
             <Route path="/" element={<NewFeatured />} />
@@ -136,6 +137,8 @@ function App() {
             <Route path="/sale" element={<Sale />} />
           </Routes>
         </main>
+
+        <Footer />
       </div>
     </Router>
   );

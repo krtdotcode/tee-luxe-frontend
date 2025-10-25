@@ -35,32 +35,47 @@ function TeeLuxeNavbar() {
           <div className="d-flex w-100 align-items-center justify-content-between">
             {/* Centered Nav Links */}
             <Nav className="mx-auto d-flex gap-2">
-              <NavLink to="/">New & Featured</NavLink>
               <NavLink to="/men">Men</NavLink>
               <NavLink to="/women">Women</NavLink>
               <NavLink to="/sale">Sale</NavLink>
             </Nav>
 
-            {/* Search Bar on Right */}
-            <Form className="ms-auto">
-              <InputGroup className="search-group">
-                <Form.Control
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="search-input"
-                />
-                <Button
-                  variant="outline-dark"
-                  onClick={handleClearSearch}
-                  disabled={!searchQuery}
-                  className="search-clear-btn"
-                >
-                  ×
-                </Button>
-              </InputGroup>
-            </Form>
+            {/* Right Side Icons */}
+            <div className="d-flex align-items-center gap-3">
+              {/* Search Bar */}
+              <Form className="mb-0">
+                <InputGroup className="search-group">
+                  <Form.Control
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                  />
+                  <Button
+                    variant="outline-dark"
+                    onClick={handleClearSearch}
+                    disabled={!searchQuery}
+                    className="search-clear-btn"
+                  >
+                    ×
+                  </Button>
+                </InputGroup>
+              </Form>
+
+              {/* Shopping Cart Icon */}
+              <Button variant="link" className="text-dark p-0 position-relative">
+                <i className="fas fa-shopping-cart fs-5"></i>
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark" style={{ fontSize: '0.6rem' }}>
+                  0
+                </span>
+              </Button>
+
+              {/* User Icon (Login) */}
+              <Button variant="link" className="text-dark p-0">
+                <i className="fas fa-user fs-5"></i>
+              </Button>
+            </div>
           </div>
         </Navbar.Collapse>
       </Container>
