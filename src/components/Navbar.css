@@ -1,35 +1,47 @@
-/* Minimal Modern Professional Navbar Styles */
 
-/* Overall navbar styling */
 .navbar {
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   font-family: 'Inter', sans-serif;
 }
 
-/* Nav links styling - minimal underline hover */
 .navbar .nav-link {
+  position: relative;
   transition: all 0.3s ease;
   padding: 0.75rem 1rem;
   margin: 0 0.25rem;
   border-radius: 4px;
   color: #000 !important;
   font-weight: 500;
+  letter-spacing: 0.5px;
+  overflow: hidden;
 }
 
-.navbar .nav-link:hover {
-  background-color: rgba(0, 0, 0, 0.02);
-  text-decoration: underline;
-  color: #000;
+.navbar .nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: #000;
+  transition: all 0.3s ease;
+}
+
+.navbar .nav-link:hover::after {
+  width: 100%;
+  left: 0;
 }
 
 .navbar .nav-link.active {
-  text-decoration: underline;
-  color: #000;
   font-weight: 600;
 }
 
-/* Search group styling */
+.navbar .nav-link.active::after {
+  width: 100%;
+  left: 0;
+}
+
 .search-group {
   width: 280px;
   min-width: 240px;
