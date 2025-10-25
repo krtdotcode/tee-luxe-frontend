@@ -4,6 +4,7 @@
 .navbar {
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  font-family: 'Inter', sans-serif;
 }
 
 /* Nav links styling - minimal underline hover */
@@ -60,24 +61,13 @@
   color: #000;
 }
 
-/* Mobile responsiveness - adjust search width */
+/* Mobile responsiveness */
 @media (max-width: 991.98px) {
   .search-group {
     width: 100%;
   }
-
   .navbar .nav-link {
     padding: 0.5rem 0.75rem;
     margin: 0.25rem 0;
   }
 }
-+++++++ REPLACE</task_progress>
-- [ ] Analyze current navbar design and structure
-- [ ] Identify areas for improvement (spacing, typography, hover effects)
-- [ ] Redesign with minimal, modern, professional appearance
-- [ ] Utilize Bootstrap utilities effectively for responsiveness
-- [ ] Update component code for better typography and alignment
-- [ ] Test navigation, search functionality, and mobile view
-- [ ] Ensure Minimal Luxe theme consistency (white, black, gray tones)
-- [ ] Adjust any remaining styling for elegance
-</task_progress>
