@@ -1,9 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import './App.css';
 import TeeLuxeNavbar from './components/Navbar';
 import Footer from './components/Footer';
+import Login from './components/Login';
+import Signup from './components/Signup';
 
 function NewFeatured() {
   return (
@@ -20,22 +22,26 @@ function NewFeatured() {
                 Experience the perfect blend of simplicity and elegance. TeeLuxe offers contemporary clothing that resonates with your sophisticated sensibilities.
               </p>
               <div className="d-flex justify-content-center gap-3 flex-wrap">
-                <Button
-                  variant="dark"
-                  size="lg"
-                  className="px-5 py-3 fw-bold"
-                  style={{ fontFamily: 'Inter', borderRadius: '0' }}
-                >
-                  Signup
-                </Button>
-                <Button
-                  variant="outline-dark"
-                  size="lg"
-                  className="px-5 py-3 fw-bold"
-                  style={{ fontFamily: 'Inter', borderRadius: '0' }}
-                >
-                  Login
-                </Button>
+                <Link to="/signup" style={{ textDecoration: 'none' }}>
+                  <Button
+                    variant="dark"
+                    size="lg"
+                    className="px-5 py-3 fw-bold"
+                    style={{ fontFamily: 'Inter', borderRadius: '0' }}
+                  >
+                    Signup
+                  </Button>
+                </Link>
+                <Link to="/login" style={{ textDecoration: 'none' }}>
+                  <Button
+                    variant="outline-dark"
+                    size="lg"
+                    className="px-5 py-3 fw-bold"
+                    style={{ fontFamily: 'Inter', borderRadius: '0' }}
+                  >
+                    Login
+                  </Button>
+                </Link>
               </div>
             </Col>
           </Row>
@@ -123,23 +129,34 @@ function Sale() {
   );
 }
 
+function AppContent() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+
+  return (
+    <div className="App">
+      {!isAuthPage && <TeeLuxeNavbar />}
+
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<NewFeatured />} />
+          <Route path="/men" element={<Men />} />
+          <Route path="/women" element={<Women />} />
+          <Route path="/sale" element={<Sale />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </main>
+
+      {!isAuthPage && <Footer />}
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
-      <div className="App">
-        <TeeLuxeNavbar />
-
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<NewFeatured />} />
-            <Route path="/men" element={<Men />} />
-            <Route path="/women" element={<Women />} />
-            <Route path="/sale" element={<Sale />} />
-          </Routes>
-        </main>
-
-        <Footer />
-      </div>
+      <AppContent />
     </Router>
   );
 }

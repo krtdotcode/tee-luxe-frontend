@@ -72,9 +72,11 @@ function TeeLuxeNavbar() {
               </Button>
 
               {/* User Icon (Login) */}
-              <Button variant="link" className="text-dark p-0">
-                <i className="fas fa-user fs-5"></i>
-              </Button>
+              <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Button variant="link" className="text-dark p-0">
+                  <i className="fas fa-user fs-5"></i>
+                </Button>
+              </Link>
             </div>
           </div>
         </Navbar.Collapse>

@@ -34,10 +34,13 @@ function Footer() {
                 <i className="fab fa-instagram fs-4"></i>
               </a>
               <a href="#" className="text-muted">
-                <i className="fab fa-twitter fs-4"></i>
+                <i className="fab fa-facebook fs-4"></i>
               </a>
               <a href="#" className="text-muted">
-                <i className="fab fa-facebook fs-4"></i>
+                <i className="fab fa-youtube fs-4"></i>
+              </a>
+              <a href="#" className="text-muted">
+                <i className="fab fa-tiktok fs-4"></i>
               </a>
             </div>
           </Col>
