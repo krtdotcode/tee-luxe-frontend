@@ -32,16 +32,16 @@ function TeeLuxeNavbar() {
 
         {/* Collapsible Content */}
         <Navbar.Collapse id="basic-navbar-nav">
-          <div className="d-flex w-100 align-items-center justify-content-between">
+          <div className="d-flex w-100 justify-content-between align-items-center flex-lg-row flex-column gap-3">
             {/* Centered Nav Links */}
-            <Nav className="mx-auto d-flex gap-2">
+            <Nav className="d-flex gap-2 mx-auto">
               <NavLink to="/men">Men</NavLink>
               <NavLink to="/women">Women</NavLink>
               <NavLink to="/sale">Sale</NavLink>
             </Nav>
 
             {/* Right Side Icons */}
-            <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-3 flex-wrap justify-content-center justify-content-lg-start">
               {/* Search Bar */}
               <Form className="mb-0">
                 <InputGroup className="search-group">
