@@ -1,0 +1,13 @@
+/* Minimal Custom Styles for Hover and Active */
+
+/* Hover effect for nav links */
+.navbar .nav-link:hover {
+  background-color: #f8f9fa;
+  color: #000;
+}
+
+/* Active link background */
+.navbar .nav-link.active {
+  background-color: #e9ecef;
+  color: #000;
+}

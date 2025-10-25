@@ -1,29 +1,40 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
+import TeeLuxeNavbar from './components/Navbar';
 
-function Home() {
+function NewFeatured() {
   return (
     <div>
-      <h1>🐳 Docker React App</h1>
-      <p>Welcome to your Dockerized React application!</p>
-      <p>This app is running in a Docker container with hot reload enabled.</p>
+      <h1>New & Featured</h1>
+      <p>Discover the latest trends and featured items at TeeLuxe.</p>
     </div>
   );
 }
 
-function About() {
+function Men() {
   return (
     <div>
-      <h1>About</h1>
-      <p>This is a sample React app containerized with Docker.</p>
-      <p>Features:</p>
-      <ul>
-        <li>React 18</li>
-        <li>React Router</li>
-        <li>Hot reload in development</li>
-        <li>Production-ready builds</li>
-      </ul>
+      <h1>Men</h1>
+      <p>Explore our collection for men.</p>
+    </div>
+  );
+}
+
+function Women() {
+  return (
+    <div>
+      <h1>Women</h1>
+      <p>Explore our collection for women.</p>
+    </div>
+  );
+}
+
+function Sale() {
+  return (
+    <div>
+      <h1>Sale</h1>
+      <p>Check out our latest discounts and deals.</p>
     </div>
   );
 }
@@ -32,15 +43,14 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <nav className="navbar">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/about" className="nav-link">About</Link>
-        </nav>
+        <TeeLuxeNavbar />
         
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/" element={<NewFeatured />} />
+            <Route path="/men" element={<Men />} />
+            <Route path="/women" element={<Women />} />
+            <Route path="/sale" element={<Sale />} />
           </Routes>
         </main>
       </div>
