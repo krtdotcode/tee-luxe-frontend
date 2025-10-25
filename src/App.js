@@ -16,7 +16,10 @@ function NewFeatured() {
           <Row className="justify-content-center align-items-center text-center">
             <Col xl={8} lg={10}>
               <h1 className="display-1 fw-bold mb-4 text-dark" style={{ fontFamily: 'Inter', letterSpacing: '-0.025em' }}>
-                Minimalist Fashion<br />for the Modern Era
+                Minimalist Fashion<br />for the Modern Era{' '}
+                <span className="fashion-icon">
+                  <i className="fas fa-tshirt"></i>
+                </span>
               </h1>
               <p className="lead mb-5 text-muted" style={{ fontSize: '1.25rem', lineHeight: '1.6' }}>
                 Experience the perfect blend of simplicity and elegance. TeeLuxe offers contemporary clothing that resonates with your sophisticated sensibilities.
