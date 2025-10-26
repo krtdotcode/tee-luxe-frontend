@@ -14,7 +14,9 @@ function ProductList() {
 
   useEffect(() => {
     const search = searchParams.get('search');
+    const category = searchParams.get('category') || 'All';
     setSearchTerm(search ? decodeURIComponent(search) : '');
+    setSelectedCategory(category);
   }, [searchParams]);
 
   const filteredProducts = useMemo(() => {
@@ -40,31 +42,7 @@ function ProductList() {
           </Col>
         </Row>
 
-        {/* Filters */}
-        <Row className="mb-4">
-          <Col>
-            <Navbar expand="lg" className="p-0 justify-content-center">
-              <Navbar.Brand className="fs-6 fw-semibold text-dark pe-3">
-                Filter by Category:
-              </Navbar.Brand>
-              <Navbar.Toggle aria-controls="category-nav" />
-              <Navbar.Collapse id="category-nav">
-                <Nav className="flex-wrap justify-content-center">
-                  {categories.map(category => (
-                    <Nav.Link
-                      key={category}
-                      className={`me-3 mb-2 fw-semibold ${selectedCategory === category ? 'text-dark border-bottom border-dark' : 'text-muted'}`}
-                      style={{ cursor: 'pointer', borderBottom: selectedCategory === category ? '2px solid #000' : 'none' }}
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      {category}
-                    </Nav.Link>
-                  ))}
-                </Nav>
-              </Navbar.Collapse>
-            </Navbar>
-          </Col>
-        </Row>
+
 
         {/* Product Grid */}
         <Row className="g-4">
