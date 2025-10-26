@@ -1,29 +1,60 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import './App.css';
+import TeeLuxeNavbar from './components/Navbar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
-function Home() {
+function Men() {
   return (
     <div>
-      <h1>🐳 Docker React App</h1>
-      <p>Welcome to your Dockerized React application!</p>
-      <p>This app is running in a Docker container with hot reload enabled.</p>
+      <h1>Men</h1>
+      <p>Explore our collection for men.</p>
     </div>
   );
 }
 
-function About() {
+function Women() {
   return (
     <div>
-      <h1>About</h1>
-      <p>This is a sample React app containerized with Docker.</p>
-      <p>Features:</p>
-      <ul>
-        <li>React 18</li>
-        <li>React Router</li>
-        <li>Hot reload in development</li>
-        <li>Production-ready builds</li>
-      </ul>
+      <h1>Women</h1>
+      <p>Explore our collection for women.</p>
+    </div>
+  );
+}
+
+function Sale() {
+  return (
+    <div>
+      <h1>Sale</h1>
+      <p>Check out our latest discounts and deals.</p>
+    </div>
+  );
+}
+
+function AppContent() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+
+  return (
+    <div className="App">
+      {!isAuthPage && <TeeLuxeNavbar />}
+
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/men" element={<Men />} />
+          <Route path="/women" element={<Women />} />
+          <Route path="/sale" element={<Sale />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </main>
+
+      {!isAuthPage && <Footer />}
     </div>
   );
 }
@@ -31,19 +62,7 @@ function About() {
 function App() {
   return (
     <Router>
-      <div className="App">
-        <nav className="navbar">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/about" className="nav-link">About</Link>
-        </nav>
-        
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-          </Routes>
-        </main>
-      </div>
+      <AppContent />
     </Router>
   );
 }
