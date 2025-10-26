@@ -1,0 +1,17 @@
+/* Home Page Specific Styles */
+
+/* Fashion Icon Animation */
+@keyframes subtleRotate {
+  from { transform: rotateY(0deg) scale(1); }
+  to { transform: rotateY(360deg) scale(1.05); }
+}
+
+.fashion-icon {
+  display: inline-block;
+  animation: subtleRotate 6s ease-in-out infinite;
+  font-size: 3rem;
+  color: #000;
+  vertical-align: -0.2em;
+  margin-left: 10px;
+  transition: all 0.3s ease;
+}

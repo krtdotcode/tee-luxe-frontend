@@ -1,29 +1,37 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
+import TeeLuxeNavbar from './components/Navbar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import ProductList from './pages/ProductList';
+import ProductDetails from './pages/ProductDetails';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
 
-function Home() {
-  return (
-    <div>
-      <h1>🐳 Docker React App</h1>
-      <p>Welcome to your Dockerized React application!</p>
-      <p>This app is running in a Docker container with hot reload enabled.</p>
-    </div>
-  );
-}
+function AppContent() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
 
-function About() {
   return (
-    <div>
-      <h1>About</h1>
-      <p>This is a sample React app containerized with Docker.</p>
-      <p>Features:</p>
-      <ul>
-        <li>React 18</li>
-        <li>React Router</li>
-        <li>Hot reload in development</li>
-        <li>Production-ready builds</li>
-      </ul>
+    <div className="App">
+      {!isAuthPage && <TeeLuxeNavbar />}
+
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+        </Routes>
+      </main>
+
+      {!isAuthPage && <Footer />}
     </div>
   );
 }
@@ -31,19 +39,7 @@ function About() {
 function App() {
   return (
     <Router>
-      <div className="App">
-        <nav className="navbar">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/about" className="nav-link">About</Link>
-        </nav>
-        
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-          </Routes>
-        </main>
-      </div>
+      <AppContent />
     </Router>
   );
 }
