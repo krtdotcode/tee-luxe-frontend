@@ -210,13 +210,14 @@ function Cart() {
 
                 <div className="d-grid gap-3">
                   <Button
+                    as={Link}
+                    to="/checkout"
                     variant="dark"
                     size="lg"
                     className="py-3 fw-bold"
                     style={{ borderRadius: '0', fontFamily: 'Inter', fontSize: '1.1rem' }}
-                    disabled={loading}
                   >
-                    {loading ? <Spinner size="sm" /> : 'Proceed to Checkout'}
+                    Proceed to Checkout
                   </Button>
 
                   <Button
