@@ -36,9 +36,17 @@ function Signup() {
           <Col lg={5} md={8}>
             <Card className="border-0 shadow-sm" style={{ borderRadius: '0' }}>
               <Card.Body className="p-5">
-                <h2 className="text-center mb-4 fw-bold" style={{ fontFamily: 'Inter', color: '#000' }}>
-                  Join TeeLuxe
-                </h2>
+                <div className="text-center mb-4">
+                  <img
+                    src={`${process.env.PUBLIC_URL}/logo/tee-luxe.png`}
+                    alt="TeeLuxe Logo"
+                    style={{ height: '50px', width: 'auto' }}
+                    className="mb-3"
+                  />
+                  <h2 className="fw-bold" style={{ fontFamily: 'Inter', color: '#000' }}>
+                    Join TeeLuxe
+                  </h2>
+                </div>
                 <p className="text-center text-muted mb-4" style={{ fontFamily: 'Inter' }}>
                   Create your account and discover minimalist fashion
                 </p>
