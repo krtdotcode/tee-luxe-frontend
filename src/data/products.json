@@ -1,0 +1,130 @@
+[
+  {
+    "id": 1,
+    "name": "Minimal Black T-Shirt",
+    "price": 29.99,
+    "image": "/images/1.png",
+    "category": "Men",
+    "description": "Essential minimalist cotton t-shirt in classic white. Soft fabric for all-day comfort."
+  },
+  {
+    "id": 2,
+    "name": "Oversized Cotton Sweater",
+    "price": 79.99,
+    "image": "/images/2.png",
+    "category": "Women",
+    "description": "Relaxed fit wool blend sweater perfect for layering seasonal looks."
+  },
+  {
+    "id": 3,
+    "name": "Tailored Black Pants",
+    "price": 89.99,
+    "image": "/images/3.png",
+    "category": "Men",
+    "description": "Slim-fit dress pants crafted from sustainable wool with sharp pressed edges."
+  },
+  {
+    "id": 4,
+    "name": "Vintage Denim Jacket",
+    "price": 119.99,
+    "image": "/images/4.png",
+    "category": "Women",
+    "description": "Authentic indigo denim jacket with minimalist design and premium materials."
+  },
+  {
+    "id": 5,
+    "name": "Silk Collar Shirt",
+    "price": 69.99,
+    "image": "/images/5.png",
+    "category": "Men",
+    "description": "Elegant button-down shirt with silk collar detailing and smooth fabric."
+  },
+  {
+    "id": 6,
+    "name": "Structured Blazer",
+    "price": 199.99,
+    "image": "/images/6.png",
+    "category": "Women",
+    "description": "Tailored blazer with clean lines and modern silhouette for versatile styling."
+  },
+  {
+    "id": 7,
+    "name": "Mid-Rise Jeans",
+    "price": 89.99,
+    "image": "/images/7.png",
+    "category": "Men",
+    "description": "Classic straight-leg jeans with signature minimalist detailing."
+  },
+  {
+    "id": 8,
+    "name": "Cashmere Scarf",
+    "price": 129.99,
+    "image": "/images/8.png",
+    "category": "Women",
+    "description": "Soft cashmere scarf in neutral tones, perfect for sophisticated layering."
+  },
+  {
+    "id": 9,
+    "name": "Linen Summer Shirt",
+    "price": 59.99,
+    "image": "/images/9.png",
+    "category": "Men",
+    "description": "Lightweight linen shirt designed for breathability and modern comfort."
+  },
+  {
+    "id": 10,
+    "name": "Structured tote",
+    "price": 49.99,
+    "image": "/images/10.png",
+    "category": "Women",
+    "description": "Minimalist leather tote with clean lines and durable construction."
+  },
+  {
+    "id": 11,
+    "name": "Wide-Leg Trouser",
+    "price": 94.99,
+    "image": "/images/11.png",
+    "category": "Women",
+    "description": "High-waisted wide-leg trousers with sophisticated tailoring."
+  },
+  {
+    "id": 12,
+    "name": "Knit Cardigan",
+    "price": 79.99,
+    "image": "/images/12.png",
+    "category": "Men",
+    "description": "Fine gauge knit cardigan with subtle texture and comfortable fit."
+  },
+  {
+    "id": 13,
+    "name": "Leather Sneakers",
+    "price": 159.99,
+    "image": "/images/13.png",
+    "category": "Women",
+    "description": "Minimalist leather sneakers with clean design and premium comfort."
+  },
+  {
+    "id": 14,
+    "name": "Oversize Dress",
+    "price": 84.99,
+    "image": "/images/14.png",
+    "category": "Women",
+    "description": "Relaxed fit midi dress with contemporary cut and soft fabric."
+  },
+  {
+    "id": 15,
+    "name": "Belt with Minimal Buckle",
+    "price": 39.99,
+    "image": "/images/15.png",
+    "category": "Men",
+    "description": "Signature leather belt with minimalist hardware and clean design."
+  },
+  {
+    "id": 16,
+    "name": "Wool Blend Coat",
+    "price": 249.99,
+    "image": "/images/16.png",
+    "category": "Women",
+    "description": "Structured wool coat with modern silhouette and timeless appeal."
+  }
+]
