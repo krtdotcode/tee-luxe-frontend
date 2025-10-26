@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Form, InputGroup, Button } from 'react-bootstrap';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 const NavLink = ({ to, children }) => {
   const location = useLocation();
@@ -14,10 +14,26 @@ const NavLink = ({ to, children }) => {
 
 function TeeLuxeNavbar() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const search = searchParams.get('search');
+    setSearchQuery(search ? decodeURIComponent(search) : '');
+  }, [searchParams]);
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   const handleClearSearch = () => {
     setSearchQuery('');
+    navigate('/products');
   };
+
+
 
   return (
     <Navbar bg="white" expand="lg" className="py-3">
@@ -37,17 +53,15 @@ function TeeLuxeNavbar() {
         {/* Collapsible Content */}
         <Navbar.Collapse id="basic-navbar-nav">
           <div className="d-flex w-100 justify-content-between align-items-center flex-lg-row flex-column gap-3">
-            {/* Centered Nav Links */}
-            <Nav className="d-flex gap-2 mx-auto">
-              <NavLink to="/men">Men</NavLink>
-              <NavLink to="/women">Women</NavLink>
-              <NavLink to="/sale">Sale</NavLink>
+            {/* Navigation Links */}
+            <Nav className="d-flex gap-2">
+              <NavLink to="/products">Shop</NavLink>
             </Nav>
 
             {/* Right Side Icons */}
             <div className="d-flex align-items-center gap-3 flex-wrap justify-content-center justify-content-lg-start">
               {/* Search Bar */}
-              <Form className="mb-0">
+              <Form className="mb-0" onSubmit={(e) => { e.preventDefault(); if (searchQuery.trim()) handleSearch(); }}>
                 <InputGroup className="search-group">
                   <Form.Control
                     type="text"
@@ -57,9 +71,9 @@ function TeeLuxeNavbar() {
                     className="search-input"
                   />
                   <Button
+                    type="button"
                     variant="outline-dark"
                     onClick={handleClearSearch}
-                    disabled={!searchQuery}
                     className="search-clear-btn"
                   >
                     ×

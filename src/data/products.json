@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Minimal Black T-Shirt",
-    "price": 29.99,
+      "price": 1299.99,
     "image": "/images/1.png",
     "category": "Men",
     "description": "Essential minimalist cotton t-shirt in classic white. Soft fabric for all-day comfort."
