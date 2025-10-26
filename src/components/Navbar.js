@@ -122,6 +122,8 @@ function TeeLuxeNavbar() {
               {/* Shopping Cart Icon */}
               <Button
                 variant="link"
+                as={Link}
+                to="/cart"
                 className="text-dark p-2 position-relative"
                 style={{ borderRadius: '50%', transition: 'background-color 0.3s ease' }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
