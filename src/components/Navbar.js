@@ -24,7 +24,11 @@ function TeeLuxeNavbar() {
       <Container fluid className="px-3">
         {/* Brand Logo */}
         <Navbar.Brand as={Link} to="/" className="fw-bolder fs-3 text-dark me-4">
-          TeeLuxe
+          <img
+            src={`${process.env.PUBLIC_URL}/logo/tee-luxe.png`}
+            alt="TeeLuxe Logo"
+            style={{ height: '40px', width: 'auto' }}
+          />
         </Navbar.Brand>
 
         {/* Mobile Toggle */}

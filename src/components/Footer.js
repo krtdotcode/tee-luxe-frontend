@@ -9,8 +9,12 @@ function Footer() {
       <Container>
         <Row className="py-4">
           <Col lg={4} className="mb-3">
-            <Navbar.Brand className="fw-bold fs-4 text-dark">
-              TeeLuxe
+            <Navbar.Brand className="fw-bold fs-4 text-dark p-0">
+            <img
+              src={`${process.env.PUBLIC_URL}/logo/tee-luxe.png`}
+              alt="TeeLuxe Logo"
+              style={{ height: '40px', width: 'auto' }}
+            />
             </Navbar.Brand>
             <p className="text-muted mt-2">
               Minimalist fashion for the contemporary soul.
