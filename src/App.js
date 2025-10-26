@@ -7,6 +7,8 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ProductList from './pages/ProductList';
+import ProductDetails from './pages/ProductDetails';
 
 function Men() {
   return (
@@ -51,6 +53,8 @@ function AppContent() {
           <Route path="/sale" element={<Sale />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
         </Routes>
       </main>
 
