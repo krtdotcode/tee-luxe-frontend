@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ProductList from './pages/ProductList';
 import ProductDetails from './pages/ProductDetails';
+import Cart from './pages/Cart';
 
 function Men() {
   return (
@@ -55,6 +56,7 @@ function AppContent() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </main>
 
