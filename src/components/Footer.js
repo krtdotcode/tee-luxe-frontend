@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container, Row, Col, Nav, Navbar, NavLink } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -9,25 +10,47 @@ function Footer() {
       <Container>
         <Row className="py-4">
           <Col lg={4} className="mb-3">
-            <Navbar.Brand className="fw-bold fs-4 text-dark p-0">
             <img
               src={`${process.env.PUBLIC_URL}/logo/tee-luxe.png`}
               alt="TeeLuxe Logo"
-              style={{ height: '40px', width: 'auto' }}
+              style={{ height: '40px', width: 'auto', marginBottom: '1rem' }}
             />
-            </Navbar.Brand>
-            <p className="text-muted mt-2">
+            <p className="text-muted" style={{ fontFamily: 'Inter', fontSize: '0.95rem' }}>
               Minimalist fashion for the contemporary soul.
             </p>
           </Col>
 
           <Col lg={4} className="mb-3">
-            <h6 className="fw-bold text-uppercase mb-3">Quick Links</h6>
-            <Nav className="flex-column">
-              <Nav.Link href="/men" className="text-muted p-0 mb-2">Men</Nav.Link>
-              <Nav.Link href="/women" className="text-muted p-0 mb-2">Women</Nav.Link>
-              <Nav.Link href="/sale" className="text-muted p-0 mb-2">Sale</Nav.Link>
-            </Nav>
+            <h6 className="fw-bold text-uppercase mb-3">Categories</h6>
+            <div className="d-flex flex-column">
+              <Link
+                to="/products"
+                className="text-muted text-decoration-none text-uppercase fw-medium mb-2 px-0 py-1"
+                style={{ fontFamily: 'Inter', transition: 'color 0.3s ease' }}
+                onMouseEnter={(e) => e.target.style.color = '#000'}
+                onMouseLeave={(e) => e.target.style.color = '#6c757d'}
+              >
+                All
+              </Link>
+              <Link
+                to="/products?category=Men"
+                className="text-muted text-decoration-none text-uppercase fw-medium mb-2 px-0 py-1"
+                style={{ fontFamily: 'Inter', transition: 'color 0.3s ease' }}
+                onMouseEnter={(e) => e.target.style.color = '#000'}
+                onMouseLeave={(e) => e.target.style.color = '#6c757d'}
+              >
+                Men
+              </Link>
+              <Link
+                to="/products?category=Women"
+                className="text-muted text-decoration-none text-uppercase fw-medium mb-2 px-0 py-1"
+                style={{ fontFamily: 'Inter', transition: 'color 0.3s ease' }}
+                onMouseEnter={(e) => e.target.style.color = '#000'}
+                onMouseLeave={(e) => e.target.style.color = '#6c757d'}
+              >
+                Women
+              </Link>
+            </div>
           </Col>
 
           <Col lg={4} className="mb-3">
