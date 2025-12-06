@@ -1,13 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Button, Badge, Card } from 'react-bootstrap';
 import ProductCard from '../components/ProductCard';
-import products from '../data/products.json';
+import { productsAPI } from '../utils/api';
 
 function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find(p => p.id === parseInt(id));
+  const [product, setProduct] = useState(null);
+  const [suggestedProducts, setSuggestedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const productData = await productsAPI.getById(id);
+        setProduct(productData);
+
+        // Fetch all products to get suggestions
+        const allProducts = await productsAPI.getAll();
+        const suggestions = allProducts
+          .filter(p => p.category.name === productData.category.name && p.id !== productData.id)
+          .slice(0, 4);
+        setSuggestedProducts(suggestions);
+      } catch (err) {
+        console.error('Failed to fetch product:', err);
+        setError(err.message || 'Failed to load product');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
 
   if (!product) {
     return (
@@ -32,10 +62,7 @@ function ProductDetails() {
     }).format(price);
   };
 
-  // Get suggested products (same category, exclude current)
-  const suggestedProducts = products
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+
 
   return (
     <section className="product-details py-5">
@@ -58,7 +85,7 @@ function ProductDetails() {
             <div className="sticky-top" style={{ top: '2rem' }}>
               <div className="mb-3">
                 <Badge bg="secondary" className="me-2" style={{ fontSize: '0.9em', borderRadius: '0' }}>
-                  {product.category}
+                  {product.category.name}
                 </Badge>
               </div>
 
