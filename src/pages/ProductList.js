@@ -2,11 +2,15 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Container, Row, Col, Nav, Navbar, Form, InputGroup, Button } from 'react-bootstrap';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import products from '../data/products.json';
+import { productsAPI } from '../utils/api';
 
 function ProductList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -19,14 +23,67 @@ function ProductList() {
     setSelectedCategory(category);
   }, [searchParams]);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await productsAPI.getAll();
+        setProducts(data);
+        setDataLoaded(true);
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+        setError(err.message || 'Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+      const matchesCategory = selectedCategory === 'All' || product.category.name === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [searchTerm, selectedCategory]);
+
+  if (loading) {
+    return (
+      <section className="product-list py-5">
+        <Container>
+          <Row className="justify-content-center">
+            <Col md={6} className="text-center">
+              <div className="spinner-border text-dark" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-3 text-muted">Loading products...</p>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="product-list py-5">
+        <Container>
+          <Row className="justify-content-center">
+            <Col md={6} className="text-center">
+              <i className="fas fa-exclamation-triangle text-warning" style={{ fontSize: '3rem' }}></i>
+              <h2 className="mt-3 text-muted">Unable to load products</h2>
+              <p className="text-muted">Error: {error}</p>
+              <p className="text-muted">Please check if the backend is running on localhost:8000</p>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+    );
+  }
 
   return (
     <section className="product-list py-5">
@@ -46,26 +103,37 @@ function ProductList() {
 
         {/* Product Grid */}
         <Row className="g-4">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map(product => (
-              <Col key={product.id} xl={4} lg={6} md={6}>
-                <ProductCard product={product} />
+          {dataLoaded ? (
+            filteredProducts.length > 0 ? (
+              filteredProducts.map(product => (
+                <Col key={product.id} xl={4} lg={6} md={6}>
+                  <ProductCard product={product} />
+                </Col>
+              ))
+            ) : (
+              <Col className="text-center py-5">
+                <div className="w-100" style={{ maxWidth: '400px', margin: '0 auto' }}>
+                  <i className="fas fa-search text-muted" style={{ fontSize: '4rem' }}></i>
+                  <h3 className="mt-3 text-muted">No products found</h3>
+                  <p className="text-muted">Try adjusting your search or filter criteria</p>
+                  <Button
+                    variant="outline-dark"
+                    onClick={() => navigate('/products')}
+                    className="mt-3"
+                    style={{ borderRadius: '0' }}
+                  >
+                    Clear Filters
+                  </Button>
+                </div>
               </Col>
-            ))
+            )
           ) : (
             <Col className="text-center py-5">
               <div className="w-100" style={{ maxWidth: '400px', margin: '0 auto' }}>
-                <i className="fas fa-search text-muted" style={{ fontSize: '4rem' }}></i>
-                <h3 className="mt-3 text-muted">No products found</h3>
-                <p className="text-muted">Try adjusting your search or filter criteria</p>
-                <Button
-                  variant="outline-dark"
-                  onClick={() => navigate('/products')}
-                  className="mt-3"
-                  style={{ borderRadius: '0' }}
-                >
-                  Clear Filters
-                </Button>
+                <i className="spinner-border text-dark" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </i>
+                <p className="mt-3 text-muted">Fetching products from server...</p>
               </div>
             </Col>
           )}

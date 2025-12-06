@@ -29,7 +29,7 @@ function ProductCard({ product }) {
       <Card.Body className="d-flex flex-column p-4">
         <div className="flex-grow-1">
           <small className="text-muted text-uppercase fw-semibold mb-2 d-block" style={{ fontSize: '0.8em' }}>
-            {product.category}
+            {product.category.name}
           </small>
           <Card.Title className="fw-bold mb-2 lh-sm" style={{ fontFamily: 'Inter', fontSize: '1.1rem' }}>
             {product.name}
