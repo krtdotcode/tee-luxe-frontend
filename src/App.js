@@ -10,6 +10,7 @@ import ProductList from './pages/ProductList';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import { AuthProvider } from './contexts/AuthContext';
 
 function AppContent() {
   const location = useLocation();
@@ -38,9 +39,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 
