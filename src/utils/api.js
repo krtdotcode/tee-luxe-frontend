@@ -32,14 +32,14 @@ const apiRequest = async (endpoint, options = {}) => {
   return handleResponse(response);
 };
 
-// Get stored token
-const getToken = () => localStorage.getItem('auth_token');
-
 // Set token
 export const setToken = (token) => localStorage.setItem('auth_token', token);
 
 // Remove token
 export const removeToken = () => localStorage.removeItem('auth_token');
+
+// Get stored token
+export const getToken = () => localStorage.getItem('auth_token');
 
 // Create authenticated request
 const authRequest = async (endpoint, options = {}) => {
