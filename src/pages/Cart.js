@@ -1,18 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Table, Spinner } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import products from '../data/products';
-
-// Sample cart items - in real app, this would come from global state/store
-const sampleCartItems = [
-  { id: 1, quantity: 2 },
-  { id: 5, quantity: 1 },
-  { id: 7, quantity: 3 }
-];
+import { Link, useNavigate } from 'react-router-dom';
+import { cartAPI, getToken } from '../utils/api';
 
 function Cart() {
-  const [cartItems, setCartItems] = useState(sampleCartItems);
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [updating, setUpdating] = useState(null); // which cart item is being updated
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (!getToken()) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await cartAPI.getAll();
+        setCartItems(data);
+      } catch (err) {
+        console.error('Failed to fetch cart:', err);
+        if (err.status === 401) {
+          setError('Please login to view your cart');
+        } else {
+          setError(err.message || 'Failed to load cart');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCart();
+  }, []);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Button, Badge, Card } from 'react-bootstrap';
 import ProductCard from '../components/ProductCard';
-import { productsAPI } from '../utils/api';
+import { productsAPI, cartAPI, getToken } from '../utils/api';
 
 function ProductDetails() {
   const { id } = useParams();
@@ -107,7 +107,18 @@ function ProductDetails() {
                   size="lg"
                   className="py-3 fw-bold"
                   style={{ fontFamily: 'Inter', borderRadius: '0', fontSize: '1.1rem' }}
-                  onClick={() => alert('Added to cart!')}
+                  onClick={async () => {
+                    if (getToken()) {
+                      try {
+                        await cartAPI.addItem(product.id, 1);
+                        alert('Added to cart!');
+                      } catch (err) {
+                        alert('Failed to add to cart. Please try again.');
+                      }
+                    } else {
+                      alert('Please login to add items to your cart.');
+                    }
+                  }}
                 >
                   <i className="fas fa-shopping-cart me-2"></i>
                   Add to Cart
