@@ -20,11 +20,12 @@ function ProductDetails() {
         const productData = await productsAPI.getById(id);
         setProduct(productData);
 
-        // Fetch all products for suggestions (cached after initial load)
-        const allProducts = await productsAPI.getAll();
-        const suggestions = allProducts
-          .filter(p => p.category.name === productData.category.name && p.id !== productData.id)
-          .slice(0, 4);
+        // Fetch suggestions efficiently using category-based filtering
+        const suggestions = await productsAPI.getSuggestions(
+          productData.category.name,
+          productData.id,
+          4
+        );
         setSuggestedProducts(suggestions);
       } catch (err) {
         console.error('Failed to fetch product:', err);
@@ -39,7 +40,42 @@ function ProductDetails() {
     }
   }, [id]);
 
-  if (!product) {
+  // Show loading state while fetching
+  if (loading) {
+    return (
+      <Container className="py-5">
+        <Row className="justify-content-center">
+          <Col md={6} className="text-center">
+            <div className="spinner-border text-dark" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <h3 className="mt-3" style={{ fontFamily: 'Inter' }}>Loading product...</h3>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <Container className="py-5">
+        <Row>
+          <Col className="text-center">
+            <i className="fas fa-exclamation-triangle text-warning" style={{ fontSize: '4rem' }}></i>
+            <h2 className="mt-3" style={{ fontFamily: 'Inter' }}>Unable to load product</h2>
+            <p className="text-muted">Error: {error}</p>
+            <Button variant="dark" style={{ borderRadius: '0' }} onClick={() => navigate('/products')}>
+              Back to Collection
+            </Button>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
+  // Show not found state only when not loading and no error but still no product
+  if (!product && !loading && !error) {
     return (
       <Container className="py-5">
         <Row>

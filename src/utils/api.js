@@ -21,7 +21,7 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
-const apiRequest = async (endpoint, options = {}, retries = 3) => {
+const apiRequest = async (endpoint, options = {}, retries = 1) => {
   const url = `${API_BASE_URL}${endpoint}`;
   const config = {
     headers: {
@@ -40,8 +40,8 @@ const apiRequest = async (endpoint, options = {}, retries = 3) => {
       if (attempt === retries) {
         throw error;
       }
-      // Wait longer between retries
-      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      // Minimal wait for retry
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
   }
 };
@@ -77,16 +77,14 @@ export const productsAPI = {
     const searchParams = new URLSearchParams(params);
     const cacheKey = `products_${searchParams.toString()}`;
 
-    // Check cache first for no params (all products) - only if not empty
-    if (!searchParams.toString() && cache.has(cacheKey) && cache.get(cacheKey).length > 0) {
+    // Check cache first - return cached data if available (even empty arrays to avoid repeated failed requests)
+    if (cache.has(cacheKey)) {
       return Promise.resolve(cache.get(cacheKey));
     }
 
     const data = await apiRequest(`/products?${searchParams}`);
-    // Cache all products result only if not empty
-    if (!searchParams.toString() && data.length > 0) {
-      cache.set(cacheKey, data);
-    }
+    // Cache result (including empty arrays to prevent repeated requests)
+    cache.set(cacheKey, data);
     return data;
   },
 
@@ -101,6 +99,20 @@ export const productsAPI = {
       cache.set(cacheKey, data);
     }
     return data;
+  },
+
+  getSuggestions: async (categoryName, excludeId, limit = 4) => {
+    const cacheKey = `suggestions_${categoryName}_${excludeId}_${limit}`;
+    if (cache.has(cacheKey)) {
+      return Promise.resolve(cache.get(cacheKey));
+    }
+
+    // Use category filter with limit to fetch only what we need from server
+    const data = await apiRequest(`/products?category=${encodeURIComponent(categoryName)}&limit=${limit + 1}`);
+    const suggestions = data.filter(product => product.id !== excludeId).slice(0, limit);
+
+    cache.set(cacheKey, suggestions);
+    return suggestions;
   },
 };
 

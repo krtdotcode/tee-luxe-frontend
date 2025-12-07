@@ -28,7 +28,10 @@ function ProductList() {
       try {
         setLoading(true);
         setError(null);
-        const data = await productsAPI.getAll();
+        const params = {};
+        if (selectedCategory !== 'All') params.category = selectedCategory;
+        if (searchTerm) params.search = searchTerm;
+        const data = await productsAPI.getAll(params);
         setProducts(data);
         setDataLoaded(true);
       } catch (err) {
@@ -40,16 +43,10 @@ function ProductList() {
     };
 
     fetchProducts();
-  }, []);
+  }, [selectedCategory, searchTerm]);
 
-  const filteredProducts = useMemo(() => {
-    return products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'All' || product.category.name === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [searchTerm, selectedCategory]);
+  // Since backend already handles filtering, no client-side filtering needed
+  const filteredProducts = products;
 
   if (loading) {
     return (
@@ -77,7 +74,7 @@ function ProductList() {
               <i className="fas fa-exclamation-triangle text-warning" style={{ fontSize: '3rem' }}></i>
               <h2 className="mt-3 text-muted">Unable to load products</h2>
               <p className="text-muted">Error: {error}</p>
-              <p className="text-muted">Please check if the backend is running on localhost:8000</p>
+              <p className="text-muted">Please check if the backend is running on localhost:8082</p>
             </Col>
           </Row>
         </Container>
