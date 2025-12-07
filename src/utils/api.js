@@ -32,6 +32,31 @@ const apiRequest = async (endpoint, options = {}) => {
   return handleResponse(response);
 };
 
+// Get stored token
+const getToken = () => localStorage.getItem('auth_token');
+
+// Set token
+export const setToken = (token) => localStorage.setItem('auth_token', token);
+
+// Remove token
+export const removeToken = () => localStorage.removeItem('auth_token');
+
+// Create authenticated request
+const authRequest = async (endpoint, options = {}) => {
+  const token = getToken();
+  if (!token) {
+    throw new ApiError('No authentication token found', 401);
+  }
+
+  return apiRequest(endpoint, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      ...options.headers,
+    },
+    ...options,
+  });
+};
+
 // Product API functions
 export const productsAPI = {
   getAll: (params = {}) => {
@@ -46,6 +71,22 @@ export const productsAPI = {
 export const categoriesAPI = {
   getAll: () => apiRequest('/categories'),
   getById: (id) => apiRequest(`/categories/${id}`),
+};
+
+// Auth API functions
+export const authAPI = {
+  register: (userData) => apiRequest('/register', 'POST', userData),
+  login: (credentials) => apiRequest('/login', 'POST', credentials),
+  logout: () => authRequest('/logout', 'POST'),
+  getUser: () => authRequest('/user'),
+};
+
+// Cart API functions
+export const cartAPI = {
+  getAll: () => authRequest('/cart'),
+  addItem: (product_id, quantity) => authRequest('/cart', 'POST', { product_id, quantity }),
+  updateItem: (cartId, quantity) => authRequest(`/cart/${cartId}`, 'PATCH', { quantity }),
+  removeItem: (cartId) => authRequest(`/cart/${cartId}`, 'DELETE'),
 };
 
 export default apiRequest;
