@@ -1,45 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, Table, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { cartAPI } from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 
 function Cart() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { cartItems, updateItem, removeItem: removeFromCart, loading: cartLoading, getCartTotal } = useCart();
   const [updating, setUpdating] = useState(null); // which cart item is being updated
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: { pathname: '/cart' } } });
       return;
     }
   }, [isAuthenticated, navigate]);
-
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await cartAPI.getAll();
-        setCartItems(data);
-      } catch (err) {
-        console.error('Failed to fetch cart:', err);
-        if (err.status === 401) {
-          setError('Please login to view your cart');
-        } else {
-          setError(err.message || 'Failed to load cart');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCart();
-  }, []);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
@@ -50,18 +26,13 @@ function Cart() {
 
   const updateQuantity = async (cartId, newQuantity) => {
     if (newQuantity <= 0) {
-      await removeItem(cartId);
+      await removeFromCart(cartId);
       return;
     }
 
     try {
       setUpdating(cartId);
-      await cartAPI.updateItem(cartId, newQuantity);
-      setCartItems(prev =>
-        prev.map(item =>
-          item.id === cartId ? { ...item, quantity: newQuantity } : item
-        )
-      );
+      await updateItem(cartId, newQuantity);
     } catch (err) {
       alert('Failed to update quantity');
     } finally {
@@ -69,11 +40,10 @@ function Cart() {
     }
   };
 
-  const removeItem = async (cartId) => {
+  const removeCartItem = async (cartId) => {
     try {
       setUpdating(cartId);
-      await cartAPI.removeItem(cartId);
-      setCartItems(prev => prev.filter(item => item.id !== cartId));
+      await removeFromCart(cartId);
     } catch (err) {
       alert('Failed to remove item');
     } finally {
@@ -81,12 +51,7 @@ function Cart() {
     }
   };
 
-  const subtotal = cartItems.reduce((sum, item) => {
-    return sum + (item.product.price * item.quantity);
-  }, 0);
-
-  const shipping = subtotal > 1000 ? 0 : 149.99; // Free shipping over ₱1000
-  const total = subtotal + shipping;
+  const { subtotal, shipping, total } = getCartTotal();
 
   if (cartItems.length === 0) {
     return (
@@ -202,7 +167,7 @@ function Cart() {
                             <Button
                               variant="outline-danger"
                               size="sm"
-                              onClick={() => removeItem(item.id)}
+                              onClick={() => removeCartItem(item.id)}
                               style={{ borderRadius: '0', border: 'none' }}
                               className="text-danger"
                               disabled={updating === item.id}

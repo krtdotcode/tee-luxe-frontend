@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Form, InputGroup, Button, NavDropdown } from 'react-bootstrap';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 
 const NavLink = ({ to, children }) => {
   return (
@@ -16,6 +17,7 @@ function TeeLuxeNavbar() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
+  const { cartItemCount } = useCart();
 
   useEffect(() => {
     const search = searchParams.get('search');
@@ -132,9 +134,11 @@ function TeeLuxeNavbar() {
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
               >
                 <i className="fas fa-shopping-cart fs-5"></i>
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark" style={{ fontSize: '0.65rem', fontWeight: '600' }}>
-                  0
-                </span>
+                {cartItemCount > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark" style={{ fontSize: '0.65rem', fontWeight: '600' }}>
+                    {cartItemCount > 99 ? '99+' : cartItemCount}
+                  </span>
+                )}
               </Button>
 
               {/* User Account */}

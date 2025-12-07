@@ -59,6 +59,16 @@ export const productsAPI = {
     return apiRequest(`/products?${searchParams}`);
   },
   getById: (id) => apiRequest(`/products/${id}`),
+  getSuggestions: async (categoryName, excludeId, limit = 4) => {
+    try {
+      const data = await apiRequest(`/products?category=${encodeURIComponent(categoryName)}&limit=${limit + 1}`);
+      const suggestions = data.filter(product => product.id !== excludeId).slice(0, limit);
+      return suggestions;
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+      return [];
+    }
+  },
 };
 
 // Category API functions
