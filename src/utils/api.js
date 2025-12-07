@@ -29,6 +29,7 @@ const apiRequest = async (endpoint, options = {}, retries = 3) => {
       ...options.headers,
     },
     ...options,
+    cache: 'no-cache', // Prevent browser HTTP caching
   };
 
   for (let attempt = 0; attempt <= retries; attempt++) {
