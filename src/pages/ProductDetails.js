@@ -20,7 +20,7 @@ function ProductDetails() {
         const productData = await productsAPI.getById(id);
         setProduct(productData);
 
-        // Fetch all products to get suggestions
+        // Fetch all products for suggestions (cached after initial load)
         const allProducts = await productsAPI.getAll();
         const suggestions = allProducts
           .filter(p => p.category.name === productData.category.name && p.id !== productData.id)

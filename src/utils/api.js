@@ -1,6 +1,9 @@
 // API utility functions using native fetch
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8082/api';
 
+// In-memory cache for API responses
+const cache = new Map();
+
 class ApiError extends Error {
   constructor(message, status) {
     super(message);
@@ -18,7 +21,7 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
-const apiRequest = async (endpoint, options = {}) => {
+const apiRequest = async (endpoint, options = {}, retries = 3) => {
   const url = `${API_BASE_URL}${endpoint}`;
   const config = {
     headers: {
@@ -28,8 +31,18 @@ const apiRequest = async (endpoint, options = {}) => {
     ...options,
   };
 
-  const response = await fetch(url, config);
-  return handleResponse(response);
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, config);
+      return handleResponse(response);
+    } catch (error) {
+      if (attempt === retries) {
+        throw error;
+      }
+      // Wait longer between retries
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+    }
+  }
 };
 
 // Set token
@@ -59,12 +72,35 @@ const authRequest = async (endpoint, options = {}) => {
 
 // Product API functions
 export const productsAPI = {
-  getAll: (params = {}) => {
+  getAll: async (params = {}) => {
     const searchParams = new URLSearchParams(params);
-    return apiRequest(`/products?${searchParams}`);
+    const cacheKey = `products_${searchParams.toString()}`;
+
+    // Check cache first for no params (all products) - only if not empty
+    if (!searchParams.toString() && cache.has(cacheKey) && cache.get(cacheKey).length > 0) {
+      return Promise.resolve(cache.get(cacheKey));
+    }
+
+    const data = await apiRequest(`/products?${searchParams}`);
+    // Cache all products result only if not empty
+    if (!searchParams.toString() && data.length > 0) {
+      cache.set(cacheKey, data);
+    }
+    return data;
   },
 
-  getById: (id) => apiRequest(`/products/${id}`),
+  getById: async (id) => {
+    const cacheKey = `product_${id}`;
+    if (cache.has(cacheKey)) {
+      return Promise.resolve(cache.get(cacheKey));
+    }
+
+    const data = await apiRequest(`/products/${id}`);
+    if (data) {
+      cache.set(cacheKey, data);
+    }
+    return data;
+  },
 };
 
 // Category API functions
