@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Button, Badge, Card } from 'react-bootstrap';
 import ProductCard from '../components/ProductCard';
-import { productsAPI, cartAPI, getToken } from '../utils/api';
+import { productsAPI, cartAPI } from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
 
 function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [product, setProduct] = useState(null);
   const [suggestedProducts, setSuggestedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -144,15 +146,16 @@ function ProductDetails() {
                   className="py-3 fw-bold"
                   style={{ fontFamily: 'Inter', borderRadius: '0', fontSize: '1.1rem' }}
                   onClick={async () => {
-                    if (getToken()) {
-                      try {
-                        await cartAPI.addItem(product.id, 1);
-                        alert('Added to cart!');
-                      } catch (err) {
-                        alert('Failed to add to cart. Please try again.');
-                      }
-                    } else {
-                      alert('Please login to add items to your cart.');
+                    if (!isAuthenticated) {
+                      navigate('/login', { state: { from: { pathname: `/product/${id}` } } });
+                      return;
+                    }
+                    try {
+                      await cartAPI.addItem(product.id, 1);
+                      // You could show a toast notification here instead of alert
+                      alert('Added to cart!');
+                    } catch (err) {
+                      alert('Failed to add to cart. Please try again.');
                     }
                   }}
                 >

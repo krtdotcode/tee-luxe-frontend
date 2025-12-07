@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Nav, Container, Form, InputGroup, Button } from 'react-bootstrap';
+import { Navbar, Nav, Container, Form, InputGroup, Button, NavDropdown } from 'react-bootstrap';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const NavLink = ({ to, children }) => {
   return (
@@ -14,6 +15,7 @@ function TeeLuxeNavbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const search = searchParams.get('search');
@@ -135,18 +137,35 @@ function TeeLuxeNavbar() {
                 </span>
               </Button>
 
-              {/* User Icon (Login) */}
-              <Button
-                variant="link"
-                as={Link}
-                to="/login"
-                className="text-dark p-2"
-                style={{ borderRadius: '50%', transition: 'background-color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
-              >
-                <i className="fas fa-user fs-5"></i>
-              </Button>
+              {/* User Account */}
+              {isAuthenticated ? (
+                <NavDropdown
+                  title={<i className="fas fa-user fs-5"></i>}
+                  id="user-dropdown"
+                  align="end"
+                  className="text-dark"
+                >
+                  <NavDropdown.Item disabled className="text-muted fw-semibold">
+                    Hello, {user?.name}
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={logout}>
+                    <i className="fas fa-sign-out-alt me-2"></i>Logout
+                  </NavDropdown.Item>
+                </NavDropdown>
+              ) : (
+                <Button
+                  variant="link"
+                  as={Link}
+                  to="/login"
+                  className="text-dark p-2"
+                  style={{ borderRadius: '50%', transition: 'background-color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                >
+                  <i className="fas fa-user fs-5"></i>
+                </Button>
+              )}
             </div>
           </div>
         </Navbar.Collapse>

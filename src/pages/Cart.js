@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Table, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { cartAPI, getToken } from '../utils/api';
+import { cartAPI } from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
 
 function Cart() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updating, setUpdating] = useState(null); // which cart item is being updated
 
   useEffect(() => {
-    const fetchCart = async () => {
-      if (!getToken()) {
-        setLoading(false);
-        return;
-      }
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: '/cart' } } });
+      return;
+    }
+  }, [isAuthenticated, navigate]);
 
+  useEffect(() => {
+    const fetchCart = async () => {
       try {
         setLoading(true);
         setError(null);
