@@ -59,6 +59,9 @@ export const productsAPI = {
     return apiRequest(`/products?${searchParams}`);
   },
   getById: (id) => apiRequest(`/products/${id}`),
+  create: (productData) => apiRequest('/products', 'POST', productData),
+  update: (id, productData) => apiRequest(`/products/${id}`, 'PATCH', productData),
+  delete: (id) => apiRequest(`/products/${id}`, 'DELETE'),
   getSuggestions: async (categoryName, excludeId, limit = 4) => {
     try {
       const data = await apiRequest(`/products?category=${encodeURIComponent(categoryName)}&limit=${limit + 1}`);

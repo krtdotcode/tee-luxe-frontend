@@ -8,6 +8,7 @@ function ProductList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [products, setProducts] = useState([]);
+  const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -32,7 +33,8 @@ function ProductList() {
         if (selectedCategory !== 'All') params.category = selectedCategory;
         if (searchTerm) params.search = searchTerm;
         const data = await productsAPI.getAll(params);
-        setProducts(data);
+        setProducts(data.data);
+        setPagination(data);
         setDataLoaded(true);
       } catch (err) {
         console.error('Failed to fetch products:', err);
@@ -140,7 +142,7 @@ function ProductList() {
         <Row className="mt-4">
           <Col className="text-center">
             <small className="text-muted">
-              Showing {filteredProducts.length} of {products.length} products
+              Showing {filteredProducts.length} of {pagination?.total || filteredProducts.length} products
             </small>
           </Col>
         </Row>
