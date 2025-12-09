@@ -1,24 +1,57 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Container, Row, Col, Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import NotificationModal from '../components/NotificationModal';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || '/';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    // Clear errors when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Placeholder validation
-    if (!formData.email || !formData.password) {
-      setErrors({ general: 'Please fill in all fields' });
-    } else {
-      // Simulate login
-      alert('Login successful!');
+    setErrors({});
+
+    // Client-side validation
+    if (!formData.email.trim()) {
+      setErrors({ email: 'Email is required' });
+      return;
+    }
+    if (!formData.password.trim()) {
+      setErrors({ password: 'Password is required' });
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setErrors({ email: 'Please enter a valid email address' });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await login(formData);
+      navigate(from, { replace: true });
+    } catch (error) {
+      setModalMessage(error.message || 'Login failed. Please check your credentials.');
+      setShowModal(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,8 +77,6 @@ function Login() {
                   Sign in to your TeeLuxe account
                 </p>
 
-                {errors.general && <Alert variant="danger">{errors.general}</Alert>}
-
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3">
                     <Form.Label style={{ fontFamily: 'Inter', fontWeight: '500' }}>Email Address</Form.Label>
@@ -56,8 +87,10 @@ function Login() {
                       onChange={handleChange}
                       placeholder="Enter your email"
                       className="py-3"
+                      isInvalid={!!errors.email}
                       style={{ borderRadius: '0', fontFamily: 'Inter' }}
                     />
+                    <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                   </Form.Group>
 
                   <Form.Group className="mb-3">
@@ -78,9 +111,10 @@ function Login() {
                       variant="dark"
                       type="submit"
                       className="py-3 fw-bold"
+                      disabled={loading}
                       style={{ fontFamily: 'Inter', borderRadius: '0' }}
                     >
-                      Sign In
+                      {loading ? <><Spinner animation="border" size="sm" className="me-2" />Signing In...</> : 'Sign In'}
                     </Button>
                   </div>
                 </Form>
@@ -96,6 +130,13 @@ function Login() {
           </Col>
         </Row>
       </Container>
+
+      <NotificationModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        title="Login Error"
+        message={modalMessage}
+      />
     </section>
   );
 }

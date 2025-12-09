@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, Table, Spinner } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import products from '../data/products';
-
-// Sample cart items - in real app, this would come from global state/store
-const sampleCartItems = [
-  { id: 1, quantity: 2 },
-  { id: 5, quantity: 1 },
-  { id: 7, quantity: 3 }
-];
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 
 function Cart() {
-  const [cartItems, setCartItems] = useState(sampleCartItems);
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { cartItems, updateItem, removeItem: removeFromCart, loading: cartLoading, getCartTotal } = useCart();
+  const [updating, setUpdating] = useState(null); // which cart item is being updated
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: '/cart' } } });
+      return;
+    }
+  }, [isAuthenticated, navigate]);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
@@ -21,40 +24,36 @@ function Cart() {
     }).format(price);
   };
 
-  // Get product details and merge with quantities
-  const cartItemsWithDetails = cartItems.map(cartItem => {
-    const product = products.find(p => p.id === cartItem.id);
-    return {
-      ...product,
-      quantity: cartItem.quantity
-    };
-  });
-
-  const updateQuantity = (id, newQuantity) => {
+  const updateQuantity = async (cartId, newQuantity) => {
     if (newQuantity <= 0) {
-      removeItem(id);
+      await removeFromCart(cartId);
       return;
     }
 
-    setCartItems(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    try {
+      setUpdating(cartId);
+      await updateItem(cartId, newQuantity);
+    } catch (err) {
+      alert('Failed to update quantity');
+    } finally {
+      setUpdating(null);
+    }
   };
 
-  const removeItem = (id) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+  const removeCartItem = async (cartId) => {
+    try {
+      setUpdating(cartId);
+      await removeFromCart(cartId);
+    } catch (err) {
+      alert('Failed to remove item');
+    } finally {
+      setUpdating(null);
+    }
   };
 
-  const subtotal = cartItemsWithDetails.reduce((sum, item) => {
-    return sum + (item.price * item.quantity);
-  }, 0);
+  const { subtotal, shipping, total } = getCartTotal();
 
-  const shipping = subtotal > 1000 ? 0 : 149.99; // Free shipping over ₱1000
-  const total = subtotal + shipping;
-
-  if (cartItemsWithDetails.length === 0) {
+  if (cartItems.length === 0) {
     return (
       <section className="cart-empty py-5">
         <Container>
@@ -113,21 +112,21 @@ function Cart() {
                       </tr>
                     </thead>
                     <tbody>
-                      {cartItemsWithDetails.map(item => (
+                      {cartItems.map(item => (
                         <tr key={item.id} className="border-bottom">
                           <td className="py-4 px-4">
                             <div className="d-flex align-items-center">
                               <img
-                                src={item.image}
-                                alt={item.name}
+                                src={item.product.image}
+                                alt={item.product.name}
                                 style={{ width: '80px', height: '80px', objectFit: 'cover' }}
                                 className="me-3"
                               />
                               <div>
                                 <h6 className="fw-bold mb-1" style={{ fontFamily: 'Inter', color: '#000' }}>
-                                  {item.name}
+                                  {item.product.name}
                                 </h6>
-                                <p className="text-muted small mb-0">{item.category}</p>
+                                <p className="text-muted small mb-0">{item.product.category.name}</p>
                               </div>
                             </div>
                           </td>
@@ -139,7 +138,7 @@ function Cart() {
                                 className="px-2"
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                 style={{ borderRadius: '0', width: '30px', height: '30px' }}
-                                disabled={item.quantity <= 1}
+                                disabled={item.quantity <= 1 || updating === item.id}
                               >
                                 -
                               </Button>
@@ -152,24 +151,26 @@ function Cart() {
                                 className="px-2"
                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                 style={{ borderRadius: '0', width: '30px', height: '30px' }}
+                                disabled={updating === item.id}
                               >
                                 +
                               </Button>
                             </div>
                           </td>
                           <td className="py-4 text-center" style={{ fontFamily: 'Inter', fontWeight: '600' }}>
-                            {formatPrice(item.price)}
+                            {formatPrice(item.product.price)}
                           </td>
                           <td className="py-4 text-center fw-bold" style={{ fontFamily: 'Inter', color: '#000' }}>
-                            {formatPrice(item.price * item.quantity)}
+                            {formatPrice(item.product.price * item.quantity)}
                           </td>
                           <td className="py-4 text-center">
                             <Button
                               variant="outline-danger"
                               size="sm"
-                              onClick={() => removeItem(item.id)}
+                              onClick={() => removeCartItem(item.id)}
                               style={{ borderRadius: '0', border: 'none' }}
                               className="text-danger"
+                              disabled={updating === item.id}
                             >
                               <i className="fas fa-trash"></i>
                             </Button>
@@ -192,7 +193,7 @@ function Cart() {
 
                 <div className="border-bottom pb-3 mb-3">
                   <div className="d-flex justify-content-between mb-2">
-                    <span style={{ fontFamily: 'Inter', color: '#6c757d' }}>Subtotal ({cartItemsWithDetails.length} items)</span>
+                    <span style={{ fontFamily: 'Inter', color: '#6c757d' }}>Subtotal ({cartItems.length} items)</span>
                     <span className="fw-semibold" style={{ fontFamily: 'Inter', color: '#000' }}>{formatPrice(subtotal)}</span>
                   </div>
                   <div className="d-flex justify-content-between">

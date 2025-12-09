@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Nav, Container, Form, InputGroup, Button } from 'react-bootstrap';
+import { Navbar, Nav, Container, Form, InputGroup, Button, NavDropdown } from 'react-bootstrap';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 
 const NavLink = ({ to, children }) => {
   return (
@@ -14,6 +16,8 @@ function TeeLuxeNavbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
+  const { cartItemCount } = useCart();
 
   useEffect(() => {
     const search = searchParams.get('search');
@@ -130,23 +134,47 @@ function TeeLuxeNavbar() {
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
               >
                 <i className="fas fa-shopping-cart fs-5"></i>
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark" style={{ fontSize: '0.65rem', fontWeight: '600' }}>
-                  0
-                </span>
+                {cartItemCount > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark" style={{ fontSize: '0.65rem', fontWeight: '600' }}>
+                    {cartItemCount > 99 ? '99+' : cartItemCount}
+                  </span>
+                )}
               </Button>
 
-              {/* User Icon (Login) */}
-              <Button
-                variant="link"
-                as={Link}
-                to="/login"
-                className="text-dark p-2"
-                style={{ borderRadius: '50%', transition: 'background-color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
-              >
-                <i className="fas fa-user fs-5"></i>
-              </Button>
+              {/* User Account */}
+              {isAuthenticated ? (
+                <NavDropdown
+                  title={<i className="fas fa-user fs-5"></i>}
+                  id="user-dropdown"
+                  align="end"
+                  className="text-dark"
+                >
+                  <NavDropdown.Item disabled className="text-muted fw-semibold">
+                    Hello, {user?.name}
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  {user.is_admin && (
+                    <NavDropdown.Item as={Link} to="/admin">
+                      <i className="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                    </NavDropdown.Item>
+                  )}
+                  <NavDropdown.Item onClick={logout}>
+                    <i className="fas fa-sign-out-alt me-2"></i>Logout
+                  </NavDropdown.Item>
+                </NavDropdown>
+              ) : (
+                <Button
+                  variant="link"
+                  as={Link}
+                  to="/login"
+                  className="text-dark p-2"
+                  style={{ borderRadius: '50%', transition: 'background-color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                >
+                  <i className="fas fa-user fs-5"></i>
+                </Button>
+              )}
             </div>
           </div>
         </Navbar.Collapse>

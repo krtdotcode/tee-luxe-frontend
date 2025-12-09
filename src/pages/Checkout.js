@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { cartAPI, ordersAPI } from '../utils/api';
 import products from '../data/products';
 
 const sampleCartItems = [{ id: 1, quantity: 2 }, { id: 5, quantity: 1 }, { id: 7, quantity: 3 }];
@@ -25,11 +27,51 @@ const regions = [
 ];
 
 function Checkout() {
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+  const [cartItems, setCartItems] = useState([]);
   const [shipping, setShipping] = useState({ firstName: '', lastName: '', email: '', phone: '', address: '', city: '', region: '', postalCode: '' });
-  const [paymentMethod, setPaymentMethod] = useState('wallet');
-  const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [orderPlaced, setOrderPlaced] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: '/checkout' } } });
+      return;
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const data = await cartAPI.getAll();
+        setCartItems(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to fetch cart:', err);
+        setLoading(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchCart();
+    }
+  }, [isAuthenticated]);
+
+  // Pre-fill shipping info with user data
+  useEffect(() => {
+    if (user) {
+      setShipping(prev => ({
+        ...prev,
+        firstName: user.name.split(' ')[0] || '',
+        lastName: user.name.split(' ').slice(1).join(' ') || '',
+        email: user.email || '',
+      }));
+    }
+  }, [user]);
 
   const formatPrice = (price) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(price);
 
@@ -51,22 +93,38 @@ function Checkout() {
     return !Object.keys(newErrors).length;
   };
 
-  const cartItemsWithDetails = sampleCartItems.map(cartItem => {
-    const product = products.find(p => p.id === cartItem.id);
-    return { ...product, quantity: cartItem.quantity };
-  });
-
-  const subtotal = cartItemsWithDetails.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce((sum, item) => {
+    return sum + (item.product.price * item.quantity);
+  }, 0);
   const shippingCost = subtotal > 1000 ? 0 : 149.99;
   const total = subtotal + shippingCost;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setLoading(false);
-    setOrderPlaced(true);
+
+    setSubmitting(true);
+    try {
+      const orderData = {
+        shipping_first_name: shipping.firstName,
+        shipping_last_name: shipping.lastName,
+        shipping_email: shipping.email,
+        shipping_phone: shipping.phone,
+        shipping_address: shipping.address,
+        shipping_city: shipping.city,
+        shipping_region: shipping.region,
+        shipping_postal_code: shipping.postalCode,
+        payment_method: paymentMethod,
+      };
+
+      const order = await ordersAPI.create(orderData);
+      setOrderPlaced(true);
+    } catch (error) {
+      console.error('Failed to place order:', error);
+      // Handle error - for now just log, later can show alert or message
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (orderPlaced) {
@@ -233,18 +291,18 @@ function Checkout() {
 
                   {/* Order Items */}
                   <div className="mb-3">
-                    {cartItemsWithDetails.map(item => (
+                    {cartItems.map(item => (
                       <div key={item.id} className="d-flex justify-content-between align-items-center mb-3">
                         <div className="flex-grow-1">
                           <div className="fw-semibold" style={{ fontFamily: 'Inter', fontSize: '0.9rem' }}>
-                            {item.name}
+                            {item.product.name}
                           </div>
                           <div className="text-muted small">
                             Qty: {item.quantity}
                           </div>
                         </div>
                         <div className="fw-semibold" style={{ fontFamily: 'Inter' }}>
-                          {formatPrice(item.price * item.quantity)}
+                          {formatPrice(item.product.price * item.quantity)}
                         </div>
                       </div>
                     ))}
@@ -254,7 +312,7 @@ function Checkout() {
 
                   <div className="border-bottom pb-3 mb-3">
                     <div className="d-flex justify-content-between mb-2">
-                      <span style={{ fontFamily: 'Inter' }}>Subtotal ({cartItemsWithDetails.length} items)</span>
+                      <span style={{ fontFamily: 'Inter' }}>Subtotal ({cartItems.length} items)</span>
                       <span className="fw-semibold">{formatPrice(subtotal)}</span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
@@ -275,10 +333,10 @@ function Checkout() {
                     variant="dark"
                     size="lg"
                     className="w-100 py-3 fw-bold"
-                    disabled={loading}
+                    disabled={submitting}
                     style={{ borderRadius: '0', fontFamily: 'Inter' }}
                   >
-                    {loading ? 'Processing...' : 'Complete Order'}
+                    {submitting ? <><Spinner animation="border" size="sm" className="me-2" />Processing...</> : 'Complete Order'}
                   </Button>
 
                   <p className="text-center mt-3 mb-0" style={{ fontFamily: 'Inter', fontSize: '0.8rem', color: '#6c757d' }}>

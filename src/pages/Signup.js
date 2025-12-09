@@ -1,32 +1,83 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Container, Row, Col, Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import NotificationModal from '../components/NotificationModal';
 
 function Signup() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || '/';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    // Clear errors when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
+    if (errors.confirmPassword) {
+      setErrors(prev => ({ ...prev, confirmPassword: null }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
 
-    // Placeholder validation
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      setErrors({ general: 'Please fill in all fields' });
+    // Client-side validation
+    if (!formData.name.trim()) {
+      setErrors({ name: 'Full name is required' });
+      return;
+    }
+    if (!formData.email.trim()) {
+      setErrors({ email: 'Email is required' });
+      return;
+    }
+    if (!formData.password.trim()) {
+      setErrors({ password: 'Password is required' });
+      return;
+    }
+    if (formData.password.length < 8) {
+      setErrors({ password: 'Password must be at least 8 characters long' });
+      return;
+    }
+    if (!formData.confirmPassword.trim()) {
+      setErrors({ confirmPassword: 'Please confirm your password' });
       return;
     }
     if (formData.password !== formData.confirmPassword) {
       setErrors({ confirmPassword: 'Passwords do not match' });
       return;
     }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setErrors({ email: 'Please enter a valid email address' });
+      return;
+    }
 
-    // Simulate signup
-    alert('Signup successful!');
+    setLoading(true);
+    try {
+      const registrationData = {
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+        password_confirmation: formData.confirmPassword,
+      };
+      await register(registrationData);
+      navigate(from, { replace: true });
+    } catch (error) {
+      setModalMessage(error.message || 'Registration failed. Please try again.');
+      setShowModal(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,8 +102,6 @@ function Signup() {
                   Create your account and discover minimalist fashion
                 </p>
 
-                {errors.general && <Alert variant="danger">{errors.general}</Alert>}
-
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3">
                     <Form.Label style={{ fontFamily: 'Inter', fontWeight: '500' }}>Full Name</Form.Label>
@@ -63,8 +112,10 @@ function Signup() {
                       onChange={handleChange}
                       placeholder="Enter your full name"
                       className="py-3"
+                      isInvalid={!!errors.name}
                       style={{ borderRadius: '0', fontFamily: 'Inter' }}
                     />
+                    <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
                   </Form.Group>
 
                   <Form.Group className="mb-3">
@@ -76,8 +127,10 @@ function Signup() {
                       onChange={handleChange}
                       placeholder="Enter your email"
                       className="py-3"
+                      isInvalid={!!errors.email}
                       style={{ borderRadius: '0', fontFamily: 'Inter' }}
                     />
+                    <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                   </Form.Group>
 
                   <Form.Group className="mb-3">
@@ -89,8 +142,10 @@ function Signup() {
                       onChange={handleChange}
                       placeholder="Create a password"
                       className="py-3"
+                      isInvalid={!!errors.password}
                       style={{ borderRadius: '0', fontFamily: 'Inter' }}
                     />
+                    <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
                   </Form.Group>
 
                   <Form.Group className="mb-3">
@@ -115,9 +170,10 @@ function Signup() {
                       variant="dark"
                       type="submit"
                       className="py-3 fw-bold"
+                      disabled={loading}
                       style={{ fontFamily: 'Inter', borderRadius: '0' }}
                     >
-                      Create Account
+                      {loading ? <><Spinner animation="border" size="sm" className="me-2" />Creating Account...</> : 'Create Account'}
                     </Button>
                   </div>
                 </Form>
@@ -133,6 +189,13 @@ function Signup() {
           </Col>
         </Row>
       </Container>
+
+      <NotificationModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        title="Registration Error"
+        message={modalMessage}
+      />
     </section>
   );
 }
