@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import './App.css';
 import TeeLuxeNavbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
+import AdminRoute from './components/AdminRoute';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -15,6 +16,8 @@ import AdminDashboard from './pages/admin/Dashboard';
 import ProductManagement from './pages/admin/ProductManagement';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+import { NotificationProvider } from './contexts/NotificationContext';
+import ToastContainer from './components/ToastContainer';
 
 function AppContent() {
   const location = useLocation();
@@ -33,8 +36,8 @@ function AppContent() {
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
-          <Route path="/admin/products" element={<PrivateRoute><ProductManagement /></PrivateRoute>} />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+          <Route path="/admin/products" element={<AdminRoute><ProductManagement /></AdminRoute>} />
         </Routes>
       </main>
 
@@ -48,7 +51,10 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <Router>
-          <AppContent />
+          <NotificationProvider>
+            <AppContent />
+            <ToastContainer />
+          </NotificationProvider>
         </Router>
       </CartProvider>
     </AuthProvider>

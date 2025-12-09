@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Table, Badge, Card, Modal, Form, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { productsAPI, categoriesAPI } from '../../utils/api';
+import { useNotification } from '../../contexts/NotificationContext';
 import ProductCard from '../../components/ProductCard';
 
 function ProductManagement() {
   const navigate = useNavigate();
+  const { showSuccess, showError } = useNotification();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
@@ -26,9 +27,9 @@ function ProductManagement() {
     try {
       setLoading(true);
       const data = await productsAPI.getAll();
-      setProducts(data);
+      setProducts(data.data || data);
     } catch (err) {
-      setError('Failed to load products');
+      showError('Failed to load products');
     } finally {
       setLoading(false);
     }
@@ -41,10 +42,10 @@ function ProductManagement() {
           productsAPI.getAll(),
           categoriesAPI.getAll()
         ]);
-        setProducts(productsData);
+        setProducts(productsData.data || productsData);
         setCategories(categoriesData);
       } catch (err) {
-        setError('Failed to load data');
+        showError('Failed to load data');
       } finally {
         setLoading(false);
       }
@@ -55,7 +56,6 @@ function ProductManagement() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
     try {
       if (editingProduct) {
@@ -64,12 +64,14 @@ function ProductManagement() {
           price: parseFloat(formData.price),
           stock_quantity: formData.stock_quantity ? parseInt(formData.stock_quantity) : null
         });
+        showSuccess('Product updated successfully!');
       } else {
         await productsAPI.create({
           ...formData,
           price: parseFloat(formData.price),
           stock_quantity: formData.stock_quantity ? parseInt(formData.stock_quantity) : null
         });
+        showSuccess('Product created successfully!');
       }
 
       setShowModal(false);
@@ -77,7 +79,7 @@ function ProductManagement() {
       resetForm();
       loadProducts();
     } catch (err) {
-      setError(err.message || 'Failed to save product');
+      showError(err.message || 'Failed to save product');
     }
   };
 
@@ -88,9 +90,10 @@ function ProductManagement() {
 
     try {
       await productsAPI.delete(productId);
+      showSuccess('Product deleted successfully!');
       loadProducts();
     } catch (err) {
-      setError('Failed to delete product');
+      showError('Failed to delete product');
     }
   };
 
@@ -173,16 +176,6 @@ function ProductManagement() {
         </Col>
       </Row>
 
-      {error && (
-        <Row className="mb-4">
-          <Col>
-            <Alert variant="danger" className="mb-0" style={{ borderRadius: '0' }}>
-              {error}
-            </Alert>
-          </Col>
-        </Row>
-      )}
-
       <Row>
         <Col>
           <Card className="shadow-sm" style={{ borderRadius: '0', border: 'none' }}>
@@ -206,7 +199,7 @@ function ProductManagement() {
                         <td>
                           {product.image ? (
                             <img
-                              src={`${process.env.REACT_APP_API_URL || 'http://localhost:8082'}${product.image}`}
+                              src={product.image}
                               alt={product.name}
                               style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
                             />
@@ -284,7 +277,6 @@ function ProductManagement() {
         </Modal.Header>
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
-            {error && <Alert variant="danger" className="mb-0" style={{ borderRadius: '0' }}>{error}</Alert>}
 
             <Row className="g-3">
               <Col md={12}>

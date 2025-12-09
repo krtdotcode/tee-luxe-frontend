@@ -17,8 +17,21 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
-    if (token) {
-      // Check if token is still valid
+    const cachedUser = localStorage.getItem('auth_user');
+
+    if (token && cachedUser) {
+      try {
+        // Restore user from localStorage immediately
+        const parsedUser = JSON.parse(cachedUser);
+        setUser(parsedUser);
+        // Try to refresh user data in background (don't block UI)
+        refreshUser();
+      } catch (error) {
+        // Invalid cache, try to fetch fresh
+        fetchUser();
+      }
+    } else if (token) {
+      // Token exists but no cached user, fetch from API
       fetchUser();
     } else {
       setLoading(false);
@@ -29,11 +42,36 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.getUser();
       setUser(response.user);
+      localStorage.setItem('auth_user', JSON.stringify(response.user));
     } catch (error) {
-      // Token invalid, remove it
-      localStorage.removeItem('auth_token');
+      // If we can't verify user, but have a token, don't log out
+      // This prevents logout on network issues
+      if (error.status === 401) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user');
+        setUser(null);
+      } else {
+        console.warn('Failed to verify user session:', error.message);
+        // Keep existing user state if we have it, otherwise set null
+        if (!user) {
+          setUser(null);
+        }
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const refreshUser = async () => {
+    try {
+      const response = await authAPI.getUser();
+      if (response.user) {
+        setUser(response.user);
+        localStorage.setItem('auth_user', JSON.stringify(response.user));
+      }
+    } catch (error) {
+      // Silently fail refresh, keep existing user data
+      console.warn('Could not refresh user data:', error.message);
     }
   };
 
@@ -41,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.login(credentials);
       localStorage.setItem('auth_token', response.token);
+      localStorage.setItem('auth_user', JSON.stringify(response.user));
       setUser(response.user);
       return response;
     } catch (error) {
@@ -52,6 +91,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.register(userData);
       localStorage.setItem('auth_token', response.token);
+      localStorage.setItem('auth_user', JSON.stringify(response.user));
       setUser(response.user);
       return response;
     } catch (error) {
@@ -66,6 +106,7 @@ export const AuthProvider = ({ children }) => {
       // Continue logout even if API fails
     }
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
     setUser(null);
   };
 

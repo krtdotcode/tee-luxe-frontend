@@ -22,9 +22,9 @@ function Dashboard() {
         ]);
 
         setStats({
-          totalProducts: products.length,
+          totalProducts: products.data ? products.data.length : products.length,
           totalCategories: categories.length,
-          totalOrders: orders.length,
+          totalOrders: orders.data ? orders.data.length : orders.length,
         });
       } catch (error) {
         console.error('Error fetching stats:', error);

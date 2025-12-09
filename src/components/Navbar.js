@@ -153,9 +153,11 @@ function TeeLuxeNavbar() {
                     Hello, {user?.name}
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
-                  <NavDropdown.Item as={Link} to="/admin">
-                    <i className="fas fa-tachometer-alt me-2"></i>Admin Dashboard
-                  </NavDropdown.Item>
+                  {user.is_admin && (
+                    <NavDropdown.Item as={Link} to="/admin">
+                      <i className="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                    </NavDropdown.Item>
+                  )}
                   <NavDropdown.Item onClick={logout}>
                     <i className="fas fa-sign-out-alt me-2"></i>Logout
                   </NavDropdown.Item>
